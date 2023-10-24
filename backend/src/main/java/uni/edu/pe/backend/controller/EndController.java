@@ -2,9 +2,10 @@ package uni.edu.pe.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import uni.edu.pe.backend.dto.Maquinaria;
+import uni.edu.pe.backend.dto.Objeto;
+import uni.edu.pe.backend.dto.Pedido;
 import uni.edu.pe.backend.dto.TopOp;
-import uni.edu.pe.backend.dto.rest.RespuestaReporteOperador;
+import uni.edu.pe.backend.dto.rest.RespuestaReportePedidos;
 import uni.edu.pe.backend.service.EndService;
 
 @CrossOrigin(origins = {"*"})
@@ -15,24 +16,33 @@ public class EndController {
     private EndService service;
 
     @RequestMapping(
-            value = "/obtenerTurnosOperador",
+            value = "/obtenerPedidos",
             method = RequestMethod.POST,
             produces = "application/json;charset=utf-8"
     )
 
-    public RespuestaReporteOperador obtenerTurnosOperador(){
-        RespuestaReporteOperador rsps = new RespuestaReporteOperador();
-        rsps.setReportes(service.obtenerTurnosOperador());
+    public RespuestaReportePedidos obtenerPedidos(){
+        RespuestaReportePedidos rsps = new RespuestaReportePedidos();
+        rsps.setReportes(service.obtenerPedidos());
         return rsps;
     }
 
     @RequestMapping(
-            value = "/registrarMaquinaria",
+            value = "/registrarPedido",
             method = RequestMethod.POST,
             produces = "application/json;charset=utf-8"
     )
-    public Maquinaria registrarMaquinaria(@RequestBody Maquinaria maquinaria) {
-        return service.registrarMaquinaria(maquinaria);
+    public Pedido registrarPedido(@RequestBody Pedido pedido) {
+        return service.registrarPedido(pedido);
+    }
+
+    @RequestMapping(
+            value = "/insertarObjeto",
+            method = RequestMethod.POST,
+            produces = "application/json;charset=utf-8"
+    )
+    public Objeto insertarObjeto(@RequestBody Objeto objeto) {
+        return service.insertarObjeto(objeto);
     }
     @RequestMapping(
             value = "/actualizarEstadoTurno",

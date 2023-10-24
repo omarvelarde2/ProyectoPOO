@@ -3,9 +3,9 @@ package uni.edu.pe.backend.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import uni.edu.pe.backend.dto.Maquinaria;
+import uni.edu.pe.backend.dto.Objeto;
+import uni.edu.pe.backend.dto.Pedido;
 import uni.edu.pe.backend.dto.TopOp;
-import uni.edu.pe.backend.dto.ReporteOperador;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -40,14 +40,14 @@ public class EndDaoImpl implements EndDao{
 
 
     @Override
-    public List<ReporteOperador> obtenerTurnosOperador() {
-        List<ReporteOperador> list = new ArrayList<>();
+    public List<Pedido> obtenerPedidos() {
+        List<Pedido> list = new ArrayList<>();
         String sql = " SELECT * \n" +
-                "FROM operador op \n" +
-                "INNER JOIN turnos_operacion top\n" +
-                "ON op.id_operador = top.id_operador\n" +
-                "INNER JOIN maquinaria maq\n" +
-                "ON maq.id_maquinaria = top.id_maquinaria;";
+                "FROM usuario us \n" +
+                "INNER JOIN pedido ped\n" +
+                "ON us.id_usuario = ped.id_usuario\n" +
+                "INNER JOIN objeto obj\n" +
+                "ON obj.id_objeto = ped.id_objeto;";
         try {
             obtenerConexion();
             Statement sentencia = conexion.createStatement();
@@ -63,17 +63,15 @@ public class EndDaoImpl implements EndDao{
     }
 
     @Override
-    public Maquinaria insertarMaquinaria(Maquinaria maquinaria) {
+    public Pedido registrarPedido(Pedido pedido) {
         try{
             obtenerConexion();
-            String sql = "INSERT INTO maquinaria(id_maquinaria, codigo, marca, modelo, descripcion, id_planta) VALUES(?, ?, ?, ?, ?, ?);";
+            String sql = "INSERT INTO pedido(id_pedido, id_objeto, id_usuario, fecha) VALUES(?, ?, ?, ?);";
             PreparedStatement st = conexion.prepareStatement(sql);
-            st.setInt(1, maquinaria.getId_maquinaria());
-            st.setString(2, maquinaria.getCodigo());
-            st.setString(3, maquinaria.getMarca());
-            st.setString(4, maquinaria.getModelo());
-            st.setString(5, maquinaria.getDescripcion());
-            st.setInt(6, maquinaria.getId_planta());
+            st.setInt(1, pedido.getId_pedido());
+            st.setInt(2, pedido.getId_objeto());
+            st.setInt(3, pedido.getId_usuario());
+            st.setString(4, pedido.getFecha());
 
             st.executeUpdate();
             st.close();
@@ -81,8 +79,29 @@ public class EndDaoImpl implements EndDao{
         }catch(SQLException e){
             throw new RuntimeException(e);
         }
-        return maquinaria;
+        return pedido;
     }
+
+    @Override
+    public Objeto insertarObjeto(Objeto objeto) {
+        try{
+            obtenerConexion();
+            String sql = "INSERT INTO objeto(id_objeto, nombre, descripcion, precio) VALUES(?, ?, ?, ?);";
+            PreparedStatement st = conexion.prepareStatement(sql);
+            st.setInt(1, objeto.getId_objeto());
+            st.setString(2, objeto.getNombre());
+            st.setString(3, objeto.getDescripcion());
+            st.setInt(4, objeto.getPrecio());
+
+            st.executeUpdate();
+            st.close();
+            cerrarConexion(null, st);
+        }catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+        return objeto;
+    }
+
 
     @Override
     public TopOp actualizarEstadoTurno(TopOp TopOp) {
@@ -105,12 +124,12 @@ public class EndDaoImpl implements EndDao{
         return TopOp;
     }
 
-    private ReporteOperador extractReport(ResultSet resultado) throws SQLException {
-        ReporteOperador report = new ReporteOperador(
-                resultado.getInt("id_operador"),
-                resultado.getString("dni"),
-                resultado.getString("nombre"),
-                resultado.getInt("telefono")
+    private Pedido extractReport(ResultSet resultado) throws SQLException {
+        Pedido report = new Pedido(
+                resultado.getInt("id_pedido"),
+                resultado.getInt("id_objeto"),
+                resultado.getInt("id_usuario"),
+                resultado.getString("fecha")
         );
         return report;
     }
