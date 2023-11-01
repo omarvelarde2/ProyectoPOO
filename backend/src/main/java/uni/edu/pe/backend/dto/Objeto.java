@@ -8,7 +8,8 @@ import lombok.Data;
 
 public class Objeto {
     private int id_objeto;
+    private int id_vendedor;
     private String nombre;
     private String descripcion;
-    private int precio;
+    private double precio;
 }
